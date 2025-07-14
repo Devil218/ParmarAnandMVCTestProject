@@ -1,0 +1,111 @@
+@model List<AspnetCoreMvcFull.Models.OrderDetails>
+@{
+    var productList = (List<SelectListItem>)ViewBag.ProductList;
+    var customerList = (List<SelectListItem>)ViewBag.CustomerList;
+    int customerId = ViewBag.CustomerId != null ? (int)ViewBag.CustomerId : 0;
+    string activeTab = ViewBag.ActiveTab ?? "customer";
+    ViewData["Title"] = "Create Orders";
+    
+}
+
+<h2>Create Orders</h2>
+
+
+<ul class="nav nav-tabs" id="orderTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @(activeTab == "customer" ? "active" : "")" id="customer-tab" data-bs-toggle="tab" href="#customer" role="tab">Customer</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(activeTab == "products" ? "active" : "")" id="products-tab" data-bs-toggle="tab" href="#products" role="tab">Order Details</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    
+    <div class="tab-pane fade @(activeTab == "customer" ? "show active" : "") p-3" id="customer" role="tabpanel">
+        <form method="post" asp-action="CreateOrders">
+            <div class="form-group col-md-6">
+        <label>Select Customer</label>
+        <select class="form-control" name="customerId">
+            <option value="">-- Select Customer --</option>
+            @foreach (var item in customerList)
+            {
+                var selected = item.Value == customerId.ToString() ? "selected" : "";
+                @:<option value="@item.Value" @selected>@item.Text</option>
+            }
+        </select>
+    </div>
+            <button type="submit" class="btn btn-primary">Next</button>
+        </form>
+    </div>
+
+    
+    <div class="tab-pane fade @(activeTab == "products" ? "show active" : "") p-3" id="products" role="tabpanel">
+        <form asp-action="CreateOrderDetails" method="post" id="orderForm">
+            <input type="hidden" name="customerId" value="@customerId" />
+            <table class="table" id="orderDetailsTable">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Amount</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                            <input type="checkbox" class="select-checkbox" />
+                        </td>
+                                <td>
+                                    <select name="details[@i].ProductId" class="form-control">
+                                        @foreach (var item in productList)
+                                        {
+                                            var selected = item.Value == Model[i].ProductId.ToString() ? "selected" : "";
+                                            @:<option value="@item.Value" @selected>@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><input name="details[@i].Quantity" value="@Model[i].Quantity" class="form-control" /></td>
+                                <td><input name="details[@i].Amount" value="@Model[i].Amount" class="form-control" /></td>
+                                <td><input name="details[@i].TaxAmount" value="@Model[i].TaxAmount" class="form-control" /></td>
+                                <td><input name="details[@i].DiscountAmount" value="@Model[i].DiscountAmount" class="form-control" /></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No products found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-success">Save Order</button>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+ <script>
+        document.getElementById("orderForm").addEventListener("submit", function (e) {
+            const rows = document.querySelectorAll("#orderDetailsTable tbody tr");
+
+            rows.forEach(function (row) {
+                const isChecked = row.querySelector(".select-checkbox").checked;
+
+                if (!isChecked) {
+                    row.remove(); 
+                }
+            });
+        });
+    </script>
+
+    }

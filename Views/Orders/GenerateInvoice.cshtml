@@ -1,0 +1,87 @@
+@model AspnetCoreMvcFull.Models.InvoiceViewModel
+
+@{
+    ViewData["Title"] = "Invoice";
+}
+
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Invoice</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <p><strong>Invoice No:</strong> @Model.InvoiceNumber</p>
+            <p><strong>Date:</strong> @DateTime.Now.ToString("dd-MM-yyyy")</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <p><strong>Customer:</strong> @Model.Customer.FirstName @Model.Customer.LastName</p>
+            <p><strong>Email:</strong> @Model.Customer.Email</p>
+            <p><strong>Address:</strong> @Model.Customer.FullAddress</p>
+        </div>
+    </div>
+
+    <table class="table table-bordered text-center">
+        <thead class="table-light">
+            <tr>
+                <th>PRODUCT</th>
+                <th>QTY</th>
+                <th>AMOUNT</th>
+                <th>TAX</th>
+                <th>DISCOUNT</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderDetails)
+            {
+                <tr>
+                  <td>
+                    <strong>@item.Title</strong>
+                    <br />
+                    <span>@item.Description</span>
+                    </td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Amount.ToString("C")</td>
+                    <td>@item.TaxAmount.ToString("C")</td>
+                    <td>@item.DiscountAmount.ToString("C")</td>
+                    <td>@(item.TotalAmount)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Optional notes or signature -->
+        </div>
+        <div class="col-md-6">
+            <table class="table table-sm">
+                <tr>
+                    <th class="text-end">Subtotal:</th>
+                    <td class="text-end">@Model.Order.Amount.ToString("C")</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Total Tax:</th>
+                    <td class="text-end">
+                        @Model.OrderDetails.Sum(x => x.TaxAmount).ToString("C")
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-end">Total Discount:</th>
+                    <td class="text-end">
+                        @Model.OrderDetails.Sum(x => x.DiscountAmount).ToString("C")
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-end">Grand Total:</th>
+                    <td class="text-end">
+                        @{
+                            var total = Model.OrderDetails.Sum(x => (x.Amount) + x.TaxAmount - x.DiscountAmount);
+                        }
+                        @total.ToString("C")
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+@model IEnumerable<AspnetCoreMvcFull.Models.OrderDetails>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="CreateOrders">Create New</a>
+</p>
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.OrderId)</th>
+                <th>@Html.DisplayNameFor(model => model.CustomerId)</th>
+                <th>@Html.DisplayNameFor(model => model.Quantity)</th>
+                <th>@Html.DisplayNameFor(model => model.Amount)</th>
+                <th>@Html.DisplayNameFor(model => model.TaxAmount)</th>
+                <th>@Html.DisplayNameFor(model => model.DiscountAmount)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.OrderId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CustomerId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TaxAmount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DiscountAmount)</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.OrderId }) |
+                        
+                        @Html.ActionLink("Delete", "Delete", new { id = item.OrderId }) |
+                        @Html.ActionLink("GenerateInvoice", "GenerateInvoice", new { OrderId = item.OrderId })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No orders found.</div>
+}
+

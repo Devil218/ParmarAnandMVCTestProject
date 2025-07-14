@@ -1,0 +1,117 @@
+@model List<AspnetCoreMvcFull.Models.OrderDetails>
+
+@{
+    var productList = (List<SelectListItem>)ViewBag.ProductList;
+    // int customerId = (int)ViewBag.CustomerId;
+}
+
+
+<form asp-action="Edit" method="post" id="editOrderForm">
+@*     <input type="hidden" name="CustomerId" value="@customerId" />
+ *@
+    <table class="table" id="orderDetailsTable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Select</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Amount</th>
+                <th>Tax</th>
+                <th>Discount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.Hidden($"details[{i}].OrderDetailsId", Model[i].OrderDetailsId)
+                            @Html.Hidden($"details[{i}].OrderId", Model[i].OrderId)
+                        </td>
+                        <td>
+                            <input type="checkbox" class="select-checkbox" checked />
+                        </td>
+                        <td>
+                            <select name="details[@i].ProductId" class="form-control">
+                                @foreach (var item in productList)
+                                {
+                                    var selected = item.Value == Model[i].ProductId.ToString() ? "selected" : "";
+                                    @:<option value="@item.Value" @selected>@item.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                           <input type="number" step="1" name="details[@i].Quantity" value="@Model[i].Quantity" class="form-control" required />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="details[@i].Amount" value="@Model[i].Amount" class="form-control" required />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="details[@i].TaxAmount" value="@Model[i].TaxAmount" class="form-control" required />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="details[@i].DiscountAmount" value="@Model[i].DiscountAmount" class="form-control" required />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No order details found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Update Order</button>
+</form>
+
+  @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+   <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("editOrderForm");
+
+            form.addEventListener("submit", function (e) {
+                const rows = document.querySelectorAll("#orderDetailsTable tbody tr");
+                let anyChecked = false;
+                const rowsToRemove = [];
+
+                rows.forEach(function (row) {
+                    const checkbox = row.querySelector(".select-checkbox");
+                    if (checkbox && checkbox.checked) {
+                        anyChecked = true;
+                    } else {
+                        rowsToRemove.push(row);
+                    }
+                });
+
+                if (!anyChecked) {
+                    e.preventDefault();
+                    alert("Please select at least one product.");
+                    return;
+                }
+
+                // Remove unchecked rows after checking
+                rowsToRemove.forEach(row => row.remove());
+            });
+
+            // Prevent characters in numeric fields
+            document.querySelectorAll('input[type="number"]').forEach(function (input) {
+                input.addEventListener("keypress", function (e) {
+                    if (!/[0-9.]/.test(e.key) && e.key !== "Backspace") {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+</script>
+
+
+}
