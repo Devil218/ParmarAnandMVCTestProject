@@ -45,7 +45,7 @@ public class CustomersController : Controller
   [HttpGet]
   public async Task<IActionResult>Edit(int id)
   {
-
+    // Edit pages 
     var res = await _productServices.GetCustomersDetilsByCustomerId(id);
 
     return View(res);
