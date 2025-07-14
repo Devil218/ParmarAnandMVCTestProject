@@ -16,6 +16,7 @@ public class CustomersController : Controller
 
   public async Task<IActionResult> Index()
   {
+    // view pages 
 
     var res = await _productServices.GetCustomersDetils();
     return View(res);
